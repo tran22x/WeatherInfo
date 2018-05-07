@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements CreateCityDialog.
         layoutContent = (CoordinatorLayout) findViewById(
                 R.id.layoutContent);
 
+
         FloatingActionButton fabAdd = (FloatingActionButton) findViewById(R.id.btnAdd);
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,9 +55,27 @@ public class MainActivity extends AppCompatActivity implements CreateCityDialog.
                 showCreatePlaceDialog();
             }
         });
-
-
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        setUpNavigationView();
+        setUpToolBar();
+        setUpRetrofit();
+        RecyclerView recyclerViewPlaces = (RecyclerView) findViewById(
+                R.id.recyclerViewCities);
+        recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(this));
+        initCities(recyclerViewPlaces);
+
+    }
+
+    private void setUpRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL_BASE)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        weatherAPI = retrofit.create(WeatherAPI.class);
+    }
+
+    private void setUpNavigationView() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -76,26 +95,10 @@ public class MainActivity extends AppCompatActivity implements CreateCityDialog.
                         return false;
                     }
                 });
-
-        setUpToolBar();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL_BASE)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-       weatherAPI = retrofit.create(WeatherAPI.class);
-
-
-
-        RecyclerView recyclerViewPlaces = (RecyclerView) findViewById(
-                R.id.recyclerViewCities);
-        recyclerViewPlaces.setLayoutManager(new LinearLayoutManager(this));
-        initCities(recyclerViewPlaces);
     }
 
     private void initCities(final RecyclerView recyclerView) {
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
                 final List<City> cities =
@@ -159,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements CreateCityDialog.
         }
     }
 
+    public void viewWeatherDetails(City city) {
+        Intent intent = new Intent(MainActivity.this, WeatherDetail.class);
+        intent.putExtra("city", city);
+        startActivity(intent);
+    }
+
     @Override
     public void onNewPlaceCreated(final City city) {
         new Thread() {
@@ -177,12 +186,7 @@ public class MainActivity extends AppCompatActivity implements CreateCityDialog.
             }
         }.start();
 
-
-    }
-
-    public void viewWeatherDetails (City city) {
-        Intent intent = new Intent(MainActivity.this, WeatherDetail.class);
-        intent.putExtra("city", city);
-        startActivity(intent);
     }
 }
+
+

@@ -49,13 +49,11 @@ public class CreateCityDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_name);
-
         View rootView = getActivity().getLayoutInflater().inflate(R.layout.dialog_create_city, null);
 
         etName = (EditText) rootView.findViewById(R.id.cityNameInput);
 
         builder.setView(rootView);
-
         builder.setPositiveButton(R.string.btn_save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -78,7 +76,6 @@ public class CreateCityDialog extends DialogFragment {
                         public void onFailure(Call<WeatherResult> call, Throwable t) {
                         }
                     });
-
                 } else {
                     etName.setError(getString(R.string.empty_error));
                 }
